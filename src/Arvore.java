@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Arvore {
@@ -24,7 +25,7 @@ public class Arvore {
     }
 
     public boolean ehInterno(No node){
-        return (node.numeroFilhos() == 0);
+        return (node.numeroFilhos() > 0);
     }
 
     public boolean ehExterno(No node){
@@ -64,22 +65,51 @@ public class Arvore {
         }
     }
 
-    public int altura(){
-        if (raiz == null) {
-            return 0;
-        }
-        int altura = 0;
-        for (Iterator<Object> it = getFilhos(raiz); it.hasNext(); ) {
-            Object filho = it.next();
-            No noFilho = (No) filho;
-            altura = Math.max(altura, profundidade(noFilho));
-        }
-        return altura;
+    public int altura() {
+        // passa o nó raiz como parâmetro
+        return alturaRecursiva(raiz);
     }
 
+    private int alturaRecursiva(No node) {
+        if (ehExterno(node)) {
+            return 0;
+        }
+        int alturaMaxima = 0;
+        for (Iterator<Object> it = getFilhos(node); it.hasNext(); ) {
+            // cria o iterador 'it' para percorrer os filhos
+            // 'it.hasNext' == i++ (retorna o próximo elemento na coleção e faz o iterador apontar para o próx. elemento)
+            Object filho = it.next();
+            // cria uma variável objeto para armazenar os filhos
+            No noFilho = (No) filho;
+            // converte essa variável para nó, pois o "mostraArvore" recebe um nó como argumento
+            alturaMaxima = Math.max(alturaMaxima, alturaRecursiva(noFilho));
+            // faz a comparação entre alturaMaxima e altura alturaRecursiva(noFilho) para ver quem é o maior
+        }
+        // + 1 para incluir o próprio nó
+        return alturaMaxima + 1;
+    }
 
-    public void Nos(){
+    public void elements() {
+        mostraArvore();
+    }
 
+    public ArrayList<No> Nos() {
+        // criando um array de No chamado"nos" para guardar todos os nós
+        ArrayList<No> nos = new ArrayList<>();
+        // vai pra o método noRecursivo com os parâmetros (raiz e o array)
+        noRecursivo(raiz, nos);
+        return nos;
+    }
+
+    private void noRecursivo(No node, ArrayList<No> nos) {
+        // adiciona o "node" (no caso raiz) para o array para poder fazer o loop
+        nos.add(node);
+        // mesmo loop de iterator
+        for (Iterator<Object> it = getFilhos(node); it.hasNext(); ) {
+            Object filho = it.next();
+            No noFilho = (No) filho;
+            noRecursivo(noFilho, nos);
+        }
     }
 
     public int size(){
@@ -103,8 +133,9 @@ public class Arvore {
         return antigoElemento;
     }
 
-    public void mostraArvore(){
+    public Iterator<Object> mostraArvore(){
         mostraArvoreRecursivo(raiz, 0);
+        return null;
     }
     private void mostraArvoreRecursivo(No node, int profundidade){
         for (int i = 0; i < profundidade; i++) {
